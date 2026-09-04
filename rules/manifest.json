@@ -1,0 +1,63 @@
+{
+    "schema":  1,
+    "installed_utc":  "2026-09-03T08:38:01.1670831Z",
+    "policy":  "Pinned community sources; medium and higher matches require analyst review.",
+    "sources":  [
+                    {
+                        "name":  "sigma-core",
+                        "repository":  "https://github.com/SigmaHQ/sigma",
+                        "release":  "r2026-07-01",
+                        "asset":  "sigma_core.zip",
+                        "url":  "https://github.com/SigmaHQ/sigma/releases/download/r2026-07-01/sigma_core.zip",
+                        "sha256":  "45ccbd62cbf0d7ccca6f44eaa010f86bb24f082b5411c5e22c71907e7770ee46"
+                    },
+                    {
+                        "name":  "yara-core",
+                        "repository":  "https://github.com/YARAHQ/yara-forge",
+                        "release":  "20260830",
+                        "asset":  "yara-forge-rules-core.zip",
+                        "url":  "https://github.com/YARAHQ/yara-forge/releases/download/20260830/yara-forge-rules-core.zip",
+                        "sha256":  "74917bc7f0e6c44c1ae1bec9c93fbb7de509a3f5c33184a40272840a91a6d3b4"
+                    },
+                    {
+                        "name":  "yara-x-engine",
+                        "repository":  "https://github.com/VirusTotal/yara-x",
+                        "release":  "v1.20.0",
+                        "asset":  "yara-x-v1.20.0-x86_64-pc-windows-msvc.zip",
+                        "url":  "https://github.com/VirusTotal/yara-x/releases/download/v1.20.0/yara-x-v1.20.0-x86_64-pc-windows-msvc.zip",
+                        "sha256":  "b1e2840bac593aea353d2b2b341f5a862c9d61c0c406d9abbbad9e1fa35163a1"
+                    },
+                    {
+                        "name":  "hayabusa-engine",
+                        "repository":  "https://github.com/Yamato-Security/hayabusa",
+                        "release":  "v4.0.0",
+                        "asset":  "hayabusa-4.0.0-win-x64.zip",
+                        "url":  "https://github.com/Yamato-Security/hayabusa/releases/download/v4.0.0/hayabusa-4.0.0-win-x64.zip",
+                        "sha256":  "6e173c9fd1fa8ee4d95931ea1e1997723330c4779f4f83a96dcd3f1b00d31ff5"
+                    },
+                    {
+                        "name":  "hayabusa-rules",
+                        "repository":  "https://github.com/Yamato-Security/hayabusa-rules",
+                        "release":  "e9bf277e95b3af1707ae59d5814959af712bd061",
+                        "asset":  "source archive",
+                        "url":  "https://github.com/Yamato-Security/hayabusa-rules/archive/e9bf277e95b3af1707ae59d5814959af712bd061.zip",
+                        "sha256":  "f8ad3c946a09c85255b3a4b659a570d8ced119c8f5b8296e6cd9f0355c14690c"
+                    },
+                    {
+                        "name":  "chainsaw-engine",
+                        "repository":  "https://github.com/WithSecureLabs/chainsaw",
+                        "release":  "v2.16.5",
+                        "asset":  "chainsaw_x86_64-pc-windows-msvc.zip",
+                        "url":  "https://github.com/WithSecureLabs/chainsaw/releases/download/v2.16.5/chainsaw_x86_64-pc-windows-msvc.zip",
+                        "sha256":  "f47a724ea61547056a0128f201d160c0c4a81c02c481c80bd3c138669c44989a"
+                    },
+                    {
+                        "name":  "chainsaw-rules",
+                        "repository":  "https://github.com/WithSecureLabs/chainsaw",
+                        "release":  "82fabe2436876f951d37485ed2bfb42e7568bdb3",
+                        "asset":  "source archive",
+                        "url":  "https://github.com/WithSecureLabs/chainsaw/archive/82fabe2436876f951d37485ed2bfb42e7568bdb3.zip",
+                        "sha256":  "10006b693ebd56fc44efde73793a86fe2facb0badc2aba2bc32f04f63ef0e4a1"
+                    }
+                ]
+}

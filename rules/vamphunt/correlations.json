@@ -1,0 +1,259 @@
+{
+  "schema": 2,
+  "version": "2026-09-03.6",
+  "name": "VampHunt cross-artifact rules",
+  "policy": "Every match is a lead and must retain the normalized source events that caused it.",
+  "rules": [
+    {
+      "id": "VH-XART-001",
+      "title": "Executable or script referenced from a user-writable directory",
+      "severity": "Medium",
+      "kind": "user_writable_executable",
+      "description": "Execution-oriented artifacts reference a program or script under Downloads, Temp, AppData, ProgramData, or Users\\Public.",
+      "artifacts": ["shimcache", "lnk", "jump_list", "amcache"],
+      "extensions": ["exe", "dll", "sys", "ps1", "psm1", "bat", "cmd", "vbs", "vbe", "js", "jse", "wsf", "wsh", "hta", "scr", "com", "cpl", "msi"],
+      "path_markers": ["\\downloads\\", "\\appdata\\local\\temp\\", "\\appdata\\roaming\\", "\\windows\\temp\\", "\\programdata\\", "\\users\\public\\"]
+    },
+    {
+      "id": "VH-XART-002",
+      "title": "Credential-access or reconnaissance utility observed",
+      "severity": "High",
+      "kind": "named_file",
+      "description": "An artifact references a utility commonly used to recover credentials, dump process memory, or enumerate Active Directory.",
+      "artifacts": ["prefetch", "shimcache", "lnk", "jump_list", "amcache", "mft", "usn", "recycle_bin"],
+      "file_names": ["mimikatz.exe", "mimidrv.sys", "nanodump.exe", "procdump.exe", "procdump64.exe", "dumpert.exe", "pypykatz.exe", "lazagne.exe", "lazagne.py", "secretsdump.py", "sharpdump.exe", "rubeus.exe", "seatbelt.exe", "sharpound.exe", "bloodhound.exe", "adfind.exe", "chromepass.exe", "webbrowserpassview.exe", "passwordfox.exe", "vaultpasswordview.exe", "lsasecretsview.exe", "cachedump.exe", "pwdump.exe"]
+    },
+    {
+      "id": "VH-XART-003",
+      "title": "Remote execution utility observed",
+      "severity": "Medium",
+      "kind": "named_file",
+      "description": "An artifact references a utility that can execute commands on another Windows system.",
+      "artifacts": ["prefetch", "shimcache", "lnk", "jump_list", "amcache", "mft", "usn", "recycle_bin"],
+      "file_names": ["psexec.exe", "psexec64.exe", "paexec.exe", "winexe.exe", "wmiexec.py", "atexec.py", "smbexec.py", "dcomexec.py", "remcom.exe", "csccmd.exe"]
+    },
+    {
+      "id": "VH-XART-004",
+      "title": "Windows system binary name outside an expected directory",
+      "severity": "High",
+      "kind": "system_binary_location",
+      "description": "An execution-oriented artifact uses a Windows system binary name from a path outside Windows system and component-store directories.",
+      "artifacts": ["shimcache", "lnk", "jump_list", "amcache"],
+      "file_names": ["svchost.exe", "lsass.exe", "services.exe", "winlogon.exe", "csrss.exe", "smss.exe", "conhost.exe", "taskhostw.exe", "rundll32.exe", "regsvr32.exe", "dllhost.exe", "spoolsv.exe"],
+      "allowed_path_markers": ["\\windows\\system32\\", "\\windows\\syswow64\\", "\\windows\\winsxs\\", "\\windows\\servicing\\", "\\windows\\softwaredistribution\\"]
+    },
+    {
+      "id": "VH-XART-005",
+      "title": "Deceptive double-extension executable",
+      "severity": "High",
+      "kind": "double_extension",
+      "description": "A file name combines a document or image extension with an executable or script extension.",
+      "artifacts": ["prefetch", "shimcache", "lnk", "jump_list", "amcache", "mft", "usn", "recycle_bin"],
+      "extensions": ["exe", "scr", "com", "cpl", "msi", "hta", "bat", "cmd", "vbs", "js", "ps1"],
+      "decoy_extensions": ["pdf", "doc", "docx", "xls", "xlsx", "ppt", "pptx", "jpg", "jpeg", "png", "gif", "txt", "rtf", "zip", "rar"]
+    },
+    {
+      "id": "VH-XART-006",
+      "title": "Program execution followed by deletion",
+      "severity": "High",
+      "kind": "execution_then_deletion",
+      "description": "The same executable or script is present in execution evidence and the Recycle Bin within thirty days.",
+      "execution_artifacts": ["prefetch", "shimcache"],
+      "deletion_artifacts": ["recycle_bin"],
+      "extensions": ["exe", "dll", "sys", "ps1", "bat", "cmd", "vbs", "js", "hta", "scr", "com", "cpl", "msi"],
+      "window_days": 30
+    },
+    {
+      "id": "VH-XART-007",
+      "title": "User-writable program corroborated by multiple artifacts",
+      "severity": "High",
+      "kind": "corroborated_user_writable",
+      "description": "A program in a user-writable directory is referenced by at least two independent forensic artifact types.",
+      "artifacts": ["prefetch", "shimcache", "lnk", "jump_list", "amcache"],
+      "extensions": ["exe", "dll", "sys", "ps1", "bat", "cmd", "vbs", "js", "hta", "scr", "com", "cpl", "msi"],
+      "path_markers": ["\\downloads\\", "\\appdata\\local\\temp\\", "\\appdata\\roaming\\", "\\windows\\temp\\", "\\programdata\\", "\\users\\public\\"],
+      "minimum_artifact_types": 2
+    },
+    {
+      "id": "VH-RVH-001",
+      "title": "Suspicious command configured to run at user logon",
+      "severity": "High",
+      "kind": "registry_run_command",
+      "description": "A Run or RunOnce value invokes a script interpreter, uses high-risk command options, or pairs a misleading value name with a program in a user-writable directory.",
+      "markers": ["powershell", "pwsh", "cmd.exe /c", "wscript", "cscript", "mshta", "regsvr32", "rundll32", "javascript:", "-encodedcommand", " -enc ", "frombase64string", "downloadstring", "invoke-expression", " iex "],
+      "allowed_path_markers": ["\\microsoft\\onedrive\\onedrive.exe", "\\discord\\update.exe", "\\microsoft\\teams\\update.exe"]
+    },
+    {
+      "id": "VH-RVH-002",
+      "title": "Debugger or monitor configured for program launch",
+      "severity": "High",
+      "kind": "registry_execution_hijack",
+      "description": "Image File Execution Options or SilentProcessExit names another program to run when a target starts or exits. This can redirect execution for persistence or defense evasion."
+    },
+    {
+      "id": "VH-RVH-003",
+      "title": "AppInit DLL configured",
+      "severity": "High",
+      "kind": "registry_appinit_dll",
+      "description": "The AppInit_DLLs value contains a DLL path, which can load code into processes that use User32.dll."
+    },
+    {
+      "id": "VH-RVH-004",
+      "title": "Windows logon program changed from its default",
+      "severity": "High",
+      "kind": "registry_winlogon_change",
+      "description": "A Winlogon Shell or Userinit value points somewhere other than the normal Windows program."
+    },
+    {
+      "id": "VH-RVH-005",
+      "title": "Service program stored in a user-writable directory",
+      "severity": "High",
+      "kind": "registry_service_user_path",
+      "description": "A service ImagePath points to an executable or script under a directory ordinary users or applications commonly write to."
+    },
+    {
+      "id": "VH-RVH-006",
+      "title": "Microsoft Defender exclusion found",
+      "severity": "Medium",
+      "kind": "registry_defender_exclusion",
+      "description": "A Defender exclusion removes a path, process, extension, or address from normal inspection. Confirm that the setting was approved."
+    },
+    {
+      "id": "VH-RVH-007",
+      "title": "High-risk command preserved in Run history",
+      "severity": "High",
+      "kind": "registry_runmru_command",
+      "description": "Explorer Run history contains an encoded, hidden, downloaded, or directly evaluated command.",
+      "markers": ["powershell", "pwsh", " -enc ", "-encodedcommand", "-w hidden", "-windowstyle hidden", "-exec bypass", "-executionpolicy bypass", "downloadstring", "downloadfile", "invoke-expression", "frombase64string", "certutil", "bitsadmin", "mshta", "regsvr32", "rundll32 javascript:"]
+    },
+    {
+      "id": "VH-LNK-001",
+      "title": "Shortcut contains high-risk command options",
+      "severity": "High",
+      "kind": "lnk_suspicious_arguments",
+      "description": "A Windows shortcut contains command options commonly used to hide, encode, download, or directly evaluate code.",
+      "markers": [" -enc ", "-encodedcommand", "-w hidden", "-windowstyle hidden", "-nop", "-noprofile", "-exec bypass", "-executionpolicy bypass", "downloadstring", "downloadfile", "invoke-expression", "frombase64string", "javascript:", "vbscript:", "mshta", "regsvr32", "rundll32", "certutil", "bitsadmin"]
+    },
+    {
+      "id": "VH-LNK-002",
+      "title": "Shortcut launches a program from a network share",
+      "severity": "High",
+      "kind": "lnk_network_executable",
+      "description": "A Windows shortcut launches an executable or script from a UNC path or recorded network share."
+    },
+    {
+      "id": "VH-MFT-001",
+      "title": "Executable or script has a named NTFS data stream",
+      "severity": "High",
+      "kind": "mft_named_data_stream",
+      "description": "An executable or script has a named data stream other than the normal Zone.Identifier download marker. Review the stream contents and origin."
+    },
+    {
+      "id": "VH-MFT-002",
+      "title": "Executable has inconsistent NTFS creation times",
+      "severity": "Medium",
+      "kind": "mft_timestamp_mismatch",
+      "description": "The Standard Information creation time of an executable or script substantially predates its File Name creation time. Copying can cause this, so review it as possible timestamp manipulation rather than proof.",
+      "window_minutes": 1440
+    },
+    {
+      "id": "VH-USN-001",
+      "title": "Executable or script created and quickly deleted",
+      "severity": "High",
+      "kind": "usn_created_then_deleted",
+      "description": "USN records show the same executable or script being created and deleted within thirty minutes, and an independent execution artifact corroborates the program from a risky location or known dual-use name.",
+      "window_minutes": 30,
+      "allowed_path_markers": ["setup.exe", "install.exe", "uninstall.exe", "updater.exe", "update.exe", "vcredist", "vc_redist", "dismhost.exe", "choco.exe", "shimgen.exe", "7z.exe"]
+    },
+    {
+      "id": "VH-USN-002",
+      "title": "Many documents renamed to the same new extension",
+      "severity": "High",
+      "kind": "usn_mass_extension_change",
+      "description": "USN rename pairs show many documents receiving the same unfamiliar extension in a five-minute window, a pattern associated with bulk file encryption.",
+      "extensions": ["doc", "docx", "xls", "xlsx", "ppt", "pptx", "pdf", "txt", "rtf", "csv", "jpg", "jpeg", "png", "gif", "zip", "7z", "rar", "db", "sqlite"],
+      "allowed_path_markers": ["tmp", "temp", "bak", "backup", "old", "new", "orig", "original"],
+      "minimum_count": 20,
+      "window_minutes": 5
+    },
+    {
+      "id": "VH-USN-003",
+      "title": "Windows event log deleted",
+      "severity": "High",
+      "kind": "usn_event_log_deleted",
+      "description": "USN records show deletion of a Windows event-log file. Confirm whether log retention or maintenance explains it.",
+      "extensions": ["evtx"]
+    },
+    {
+      "id": "VH-USN-004",
+      "title": "Windows Registry hive deleted",
+      "severity": "Medium",
+      "kind": "usn_registry_hive_deleted",
+      "description": "USN records show deletion of a Windows Registry hive. This can be normal during profile removal, so correlate it with account and system activity.",
+      "file_names": ["SAM", "SECURITY", "SOFTWARE", "SYSTEM", "NTUSER.DAT", "UsrClass.dat", "$UsnJrnl"]
+    },
+    {
+      "id": "VH-EVT-001",
+      "title": "New account added to a privileged group",
+      "severity": "High",
+      "kind": "evtx_account_privilege_sequence",
+      "description": "Security events connect a newly created account to membership in a privileged local or domain group within one hour.",
+      "event_ids": [4720, 4728, 4732, 4756],
+      "group_markers": ["administrators", "domain admins", "enterprise admins", "schema admins", "remote desktop users", "account operators", "backup operators", "server operators"],
+      "allowed_path_markers": ["defaultuser0", "wdagutilityaccount"],
+      "window_minutes": 60
+    },
+    {
+      "id": "VH-EVT-002",
+      "title": "Repeated failed logons followed by a success",
+      "severity": "High",
+      "kind": "evtx_failed_then_success",
+      "description": "Five or more failed Security logons from the same address to the same account are followed by a successful logon within fifteen minutes.",
+      "event_ids": [4624, 4625],
+      "minimum_count": 5,
+      "window_minutes": 15
+    },
+    {
+      "id": "VH-EVT-003",
+      "title": "Risky service program corroborated by execution evidence",
+      "severity": "High",
+      "kind": "evtx_service_execution_link",
+      "description": "A service-install event points to a user-writable or known dual-use program also present in Prefetch, Amcache, Shimcache, shortcut, or jump-list evidence.",
+      "event_ids": [7045]
+    },
+    {
+      "id": "VH-EVT-004",
+      "title": "Scheduled task references a risky observed program",
+      "severity": "High",
+      "kind": "evtx_task_execution_link",
+      "description": "A task-creation event references a user-writable or known dual-use program corroborated by execution-oriented artifacts.",
+      "event_ids": [4698, 106]
+    },
+    {
+      "id": "VH-EVT-005",
+      "title": "Suspicious PowerShell content linked to an observed program",
+      "severity": "High",
+      "kind": "evtx_powershell_artifact_link",
+      "description": "A PowerShell script-block event contains high-risk behavior and names a program also present in execution-oriented evidence.",
+      "event_ids": [4104],
+      "markers": ["downloadstring", "downloadfile", "invoke-expression", "frombase64string", "reflection.assembly", "virtualalloc", "writeprocessmemory", "-encodedcommand", "iex(", "invoke-mimikatz", "amsiutils", "amsiinitfailed"]
+    },
+    {
+      "id": "VH-EVT-006",
+      "title": "Defender protection disabled before risky execution",
+      "severity": "Critical",
+      "kind": "evtx_defender_then_execution",
+      "description": "A Microsoft Defender protection-disabled event is followed by a user-writable or known dual-use program observed in execution evidence within two hours.",
+      "event_ids": [5001],
+      "window_minutes": 120
+    },
+    {
+      "id": "VH-SRUM-001",
+      "title": "Risky observed program used the network",
+      "severity": "High",
+      "kind": "srum_network_execution_link",
+      "description": "SRUM attributes sent or received bytes to a user-writable or known dual-use program that is independently present in execution-oriented artifacts.",
+      "allowed_path_markers": ["\\googleupdater\\", "\\temp\\google", "\\microsoft\\onedrive\\", "\\discord\\", "\\microsoft\\teams\\"]
+    }
+  ]
+}

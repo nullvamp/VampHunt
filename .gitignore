@@ -1,0 +1,12 @@
+/node_modules/
+/dist/
+/src-tauri/target/
+/src-tauri/target-*/
+/src-tauri/binaries/*.exe
+/rules/cache/
+/rules/active/
+*.db
+*.db-shm
+*.db-wal
+/.idea/
+/.vscode/
